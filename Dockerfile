@@ -1,20 +1,14 @@
-# 1. Tam sürüm Python kullanıyoruz (Hata riskini azaltır)
+# 1. Python'un temel sürümü
 FROM python:3.9
 
-# 2. Sistemi güncelle ve gerekli aracı (wget) kur
-RUN apt-get update && apt-get install -y wget
+# 2. Sistemi güncelle ve Chromium'u (Tarayıcı) + Sürücüsünü kur
+# Google'dan indirmek yerine, Linux'un kendi deposundan alıyoruz (Çok daha güvenli)
+RUN apt-get update && apt-get install -y chromium chromium-driver
 
-# 3. Google Chrome'u DOĞRUDAN indir
-RUN wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-
-# 4. İndirilen dosyayı kur (apt-get eksik parçaları otomatik tamamlar)
-RUN apt-get install -y ./google-chrome-stable_current_amd64.deb
-
-# 5. İndirdiğimiz kurulum dosyasını temizle (yer kaplamasın)
-RUN rm google-chrome-stable_current_amd64.deb
-
-# --- Standart Ayarlar ---
+# 3. Kütüphaneleri yükle
 WORKDIR /app
 COPY . .
 RUN pip install --no-cache-dir -r requirements.txt
+
+# 4. Başlat
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
